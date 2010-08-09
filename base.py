@@ -12,10 +12,11 @@ from django.db.models.fields.related import ManyToOneRel
 from django.db.models.query_utils import DeferredAttribute
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
-from multibd import signals
+from django_multibd import signals
 
 class MultiBdModelBase(base.ModelBase):
-    
+
+
      def _prepare(cls):
         """
         Creates some methods once self._meta has been populated.

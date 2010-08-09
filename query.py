@@ -7,11 +7,13 @@ from django.db.models import sql
 from django.db.models.sql.where import WhereNode
 from utils import getConnection
 
-class MultiBdQuery(sql.Query):
+
+class MultiBdQueryBase(sql.BaseQuery):
+    
     def __init__(self, model, banco):
         self.banco = banco
         self.connection = getConnection(self.banco)
-        super(MultiBdQuery, self).__init__(model, self.connection, WhereNode)
+        super(MultiBdQueryBase, self).__init__(model, self.connection, WhereNode)
         
     def __setstate__(self, obj_dict):
         """
@@ -28,3 +30,13 @@ class MultiBdQuery(sql.Query):
         # supported. It's the only class-reference to the module-level
         # connection variable.
         self.connection = getConnection(self.banco)
+
+def get_query_class(banco):
+    from django.conf import settings
+    import sql_server.pyodbc.query
+    if settings.SECONDARY_DB[banco]["DATABASE_ENGINE"] == "sql_server.pyodbc":
+        MultiBdQuery = sql_server.pyodbc.query.query_class(MultiBdQueryBase)
+    else:
+        MultiBdQuery = MultiBdQueryBase
+    return MultiBdQuery
+        

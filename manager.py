@@ -6,7 +6,7 @@ Created on 05/08/2010
 from django.db.models import sql
 from django.db.models.manager import Manager
 from django.db.models.query import QuerySet
-from query import MultiBdQuery
+from query import get_query_class
 from utils import getConnection
 
 class MultiBdManager(Manager):
@@ -17,17 +17,15 @@ class MultiBdManager(Manager):
         super(MultiBdManager, self).__init__(*args, **kwargs)
         
         self.banco = banco
-
-    def all(self):
-        return self.get_query_set()
-    
-    def get(self, *args, **kwargs):
-        return self.get_query_set().get(*args, **kwargs)
     
     def get_query_set(self):
         #Obtem um novo query a partir das configuracoes de banco
-        query = MultiBdQuery(self.model, self.banco)
-        return QuerySet(self.model, query)
+        classe = get_query_class(self.banco)
+        query = classe(self.model, self.banco)
+        print query
+        qs = QuerySet(self.model, query)
+        print qs.query.connection
+        return qs
 
     def _insert(self, values, return_id=False, raw_values=False):
         query = sql.InsertQuery(self.model, getConnection(self.banco))
