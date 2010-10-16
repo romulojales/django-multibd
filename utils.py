@@ -3,7 +3,7 @@ Created on 05/08/2010
 
 @author: romulo
 '''
-from sqlServerMultiBd.pyodbc import base
+#from sqlServerMultiBd.pyodbc import base
 from django.conf import settings
 from django.db import load_backend
 

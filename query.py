@@ -12,13 +12,12 @@ class MultiBdQueryBase(sql.BaseQuery):
     
     def __init__(self, model, banco):
         self.banco = banco
+        self.model = model
         self.connection = getConnection(self.banco)
-        super(MultiBdQueryBase, self).__init__(model, self.connection, WhereNode)
-        
+        super(MultiBdQueryBase, self).__init__( self.model, self.connection, WhereNode)
+
     def __setstate__(self, obj_dict):
-        """
-        Unpickling support.
-        """
+        """Unpickling support."""
         # Rebuild list of field instances
         obj_dict['select_fields'] = [
             name is not None and obj_dict['model']._meta.get_field(name) or None
@@ -31,12 +30,13 @@ class MultiBdQueryBase(sql.BaseQuery):
         # connection variable.
         self.connection = getConnection(self.banco)
 
+        
 def get_query_class(banco):
     from django.conf import settings
-    import sql_server.pyodbc.query
-    if settings.SECONDARY_DB[banco]["DATABASE_ENGINE"] == "sql_server.pyodbc":
-        MultiBdQuery = sql_server.pyodbc.query.query_class(MultiBdQueryBase)
-    else:
-        MultiBdQuery = MultiBdQueryBase
-    return MultiBdQuery
+    #import sql_server.pyodbc.query
+    #if settings.SECONDARY_DB[banco]["DATABASE_ENGINE"] == "sql_server.pyodbc":
+    #    MultiBdQuery = sql_server.pyodbc.query.query_class(MultiBdQueryBase)
+    #else:
+    MultiBdQuery = MultiBdQueryBase
+    return MultiBdQueryBase
         

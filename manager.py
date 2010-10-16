@@ -15,16 +15,18 @@ class MultiBdManager(Manager):
     
     def __init__(self, banco, *args, **kwargs):
         super(MultiBdManager, self).__init__(*args, **kwargs)
-        
         self.banco = banco
     
     def get_query_set(self):
+        print "obtendo um novo query set"
         #Obtem um novo query a partir das configuracoes de banco
         classe = get_query_class(self.banco)
         query = classe(self.model, self.banco)
-        print query
+        print 'model',self.model
+        print 'query',type(query)
+        
         qs = QuerySet(self.model, query)
-        print qs.query.connection
+        print "qs",qs
         return qs
 
     def _insert(self, values, return_id=False, raw_values=False):
@@ -34,3 +36,4 @@ class MultiBdManager(Manager):
         #O commit automatico so eh valido para a conexao padrao do banco
         query.connection._commit()
         return ret
+
